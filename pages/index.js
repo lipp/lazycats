@@ -21,14 +21,14 @@ const chunkSize = 5
 class Boxes extends React.Component {
 
   state = {
-    boxes: this.props.boxes,
+    gifs: this.props.gifs,
     index: this.props.index
   }
 
   static async getInitialProps ({req}) {
     const urls = await fetchGifUrls(0, chunkSize)
     return {
-      boxes: urls,
+      gifs: urls,
       index: chunkSize
     }
   }
@@ -41,7 +41,7 @@ class Boxes extends React.Component {
   
     const urls = await fetchGifUrls(this.state.index, chunkSize)
     this.setState({
-      boxes: this.state.boxes.concat(urls),
+      gifs: this.state.gifs.concat(urls),
       index: this.state.index + chunkSize
     }, () => this.loading = false)
   }
@@ -54,7 +54,7 @@ class Boxes extends React.Component {
           <meta name='viewport' content='initial-scale=1.0, width=device-width' />
           <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
         </Head>
-        <ImageList images={this.state.boxes} />
+        <ImageList images={this.state.gifs} />
         <IntersectionObservable onChange={this.loadMore} options={{threshold: [0, 1]}} >
           <LoadingIndicator />
         </IntersectionObservable>
