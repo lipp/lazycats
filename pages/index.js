@@ -1,95 +1,73 @@
 import React from 'react'
+import Head from 'next/head'
+import 'isomorphic-fetch'
+import IntersectionObservable from '../components/IntersectionObservable'
+import ImageList from '../components/ImageList'
 
-
-class IntersectionObservable extends React.Component {
-
-  componentDidMount () {
-    this.observer = new IntersectionObserver(this.observe, this.props.options)
-    this.observer.observe(this.node)
-  }
-
-  componentWillUnmount () {
-    this.observer.unobserve(this.node)
-  }
-
-  observe = entries => {
-    this.props.onChange(entries[0])
-  }
-
-  render () {
-    const {children} = this.props
-    return <div ref={node => this.node = node} >{children}</div>
-  }
-}
-
-const threshold = [...(Array(1000).keys())].map(index => index / 1000)
-
-const fetchGifUrls = async offset => {
-  const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=d72eff4b2a41468ebecc3e910bf62fc3&q=cat&limit=10&offset=${offset}&rating=G&lang=en`)
+const fetchGifUrls = async (offset, limit) => {
+  const endpoint = 'https://api.giphy.com/v1/gifs/search?api_key=d72eff4b2a41468ebecc3e910bf62fc3&q=cats&rating=G&lang=en'
+  const response = await fetch(`${endpoint}&limit=${limit}&offset=${offset}`)
   const json = await response.json()
-  return json.data.map(entry => entry.images.fixed_height.url)
+  return json.data.map(entry => ({
+    smallUrl: entry.images.fixed_height_small_still.url,
+    fullUrl: entry.images.fixed_height_downsampled.url
+  }))
 }
 
-class Box extends React.Component {
 
-  state = {
-    opacity: 1
-  }
-
-  setOpacity = ({intersectionRatio}) => {
-    this.setState({opacity: intersectionRatio})
-  }
-
-  render () {
-    return (
-      <IntersectionObservable onChange={this.setOpacity} options={{threshold}} >
-        <div style={{height: 400, background: 'black', color: 'white', opacity: this.state.opacity}} >
-          <img src={this.props.url} />
-        </div>
-      </IntersectionObservable>
-    )
-  }
-}
-
+const chunkSize = 5
 
 class Boxes extends React.Component {
-    state = {
-      boxes: [],
-      index: 0
-    }
 
-  componentDidMount () {
-    this.loadMore({isIntersecting: true})
+  state = {
+    boxes: this.props.boxes,
+    index: this.props.index
   }
 
+  static async getInitialProps ({req}) {
+    const urls = await fetchGifUrls(0, chunkSize)
+    return {
+      boxes: urls,
+      index: chunkSize
+    }
+  }
 
-  loadMore = ({isIntersecting}) => {
+  componentDidMount () {
+   //  require('intersection-observer')
+  }
+
+  loadMore = async ({isIntersecting}) => {
     if (this.loading || !isIntersecting) {
       return
     }
     this.loading = true
-    console.log('load more')
   
-    fetchGifUrls(this.state.index)
-      .then(urls => {
-        this.setState({
-          boxes: this.state.boxes.concat(urls),
-          index: this.state.index + 10
-        }, () => this.loading = false)
-      })
+    const urls = await fetchGifUrls(this.state.index, chunkSize)
+    this.setState({
+      boxes: this.state.boxes.concat(urls),
+      index: this.state.index + chunkSize
+    }, () => this.loading = false)
   }
+
   render () {
     return (
       <div>
-        {this.state.boxes.map((url, key) => <img key={key} src={url} style={{height: 300}} />)}
+        <Head>
+          <title>Cats</title>
+          <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+        </Head>
+        <ImageList images={this.state.boxes} />
         <IntersectionObservable onChange={this.loadMore} options={{threshold: [0]}} >
-          <div style={{height: 300, background: 'red'}} />
+          <div style={{height: 10, background: 'red'}} />
         </IntersectionObservable>
+        <style jsx global>{`
+          body {margin: 0;}
+        `}</style>
       </div>
     )
   }
 }
 
 
-export default () => <Boxes />
+export default Boxes
 
