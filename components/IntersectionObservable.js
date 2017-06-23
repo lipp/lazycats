@@ -3,16 +3,13 @@ import React from 'react'
 export default class IntersectionObservable extends React.Component {
 
   componentDidMount () {
-    if (typeof window.IntersectionObserver !== 'undefined') {
-      this.io = new IntersectionObserver(this.observe, this.props.options)
-      this.io.observe(this.node)
-    }
+    require('intersection-observer')
+    this.io = new IntersectionObserver(this.observe, this.props.options)
+    this.io.observe(this.node)
   }
 
   componentWillUnmount () {
-    if (this.io) {
-      this.io.disconnect()
-    }
+    this.io.disconnect()
   }
 
   observe = entries => {

@@ -18,5 +18,12 @@
     "preact-compat": "^3.16.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1"
+  },
+  "now": {
+    "name": "cats",
+    "alias": "cats.now.sh",
+    "env": {
+      "NODE_ENV": "production"
+    }
   }
 }
