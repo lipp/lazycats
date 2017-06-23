@@ -43,7 +43,6 @@ class Boxes extends React.Component {
     }
     this.loading = true
   
-    console.log('load')
     const urls = await fetchGifUrls(this.state.index, chunkSize)
     this.setState({
       boxes: this.state.boxes.concat(urls),
