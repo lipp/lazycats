@@ -33,12 +33,8 @@ class Boxes extends React.Component {
     }
   }
 
-  componentDidMount () {
-    require('intersection-observer')
-  }
-
-  loadMore = async ({isIntersecting}) => {
-    if (this.loading || !isIntersecting) {
+  loadMore = async ({intersectionRatio}) => {
+    if (this.loading || intersectionRatio === 0) {
       return
     }
     this.loading = true
@@ -56,13 +52,17 @@ class Boxes extends React.Component {
         <Head>
           <title>Cats</title>
           <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+          <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
         </Head>
         <ImageList images={this.state.boxes} />
         <IntersectionObservable onChange={this.loadMore} options={{threshold: [0, 1]}} >
           <LoadingIndicator />
         </IntersectionObservable>
         <style jsx global>{`
-          body {margin: 0;}
+          body {
+            margin: 0;
+            background: black;
+          }
         `}</style>
       </div>
     )

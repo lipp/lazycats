@@ -3,7 +3,6 @@ import React from 'react'
 export default class IntersectionObservable extends React.Component {
 
   componentDidMount () {
-    require('intersection-observer')
     this.io = new IntersectionObserver(this.observe, this.props.options)
     this.io.observe(this.node)
   }

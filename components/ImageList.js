@@ -8,7 +8,7 @@ const ImageList = ({images}) => (
         list-style: none;
         display: flex;
         flex-wrap: wrap;
-        margin-bottom: 100px;
+        margin-bottom: 20px;
         padding: 0;
       }
       li {
