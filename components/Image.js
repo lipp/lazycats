@@ -1,5 +1,5 @@
 import React from 'react'
-import IntersectionObservable from './IntersectionObservable'
+import {Observable} from './IntersectionObservable'
 
 export default class Image extends React.Component {
 
@@ -8,14 +8,22 @@ export default class Image extends React.Component {
   }
 
   loadFullUrl = ({intersectionRatio}) => {
-    if (intersectionRatio > 0 && this.state.url !== this.props.fullUrl) {
-      this.setState({url: this.props.fullUrl})
+    this.intersectionRatio = intersectionRatio
+    if (intersectionRatio > 0.3 && this.state.url !== this.props.fullUrl) {
+      if (!this.timer) {
+        this.timer = setTimeout(() => {
+          if (this.intersectionRatio > 0.3) {
+            this.setState({url: this.props.fullUrl})
+          }
+          delete this.timer
+        }, 1000)
+      }
     }
   }
 
   render () {
     return (
-      <IntersectionObservable onChange={this.loadFullUrl} options={{threshold: [0]}} >
+      <Observable onIntersectionChange={this.loadFullUrl} >
         <div>
           <img src={this.state.url} />
         </div>
@@ -29,7 +37,7 @@ export default class Image extends React.Component {
             object-fit: cover;
           }
         `}</style>
-      </IntersectionObservable>
+      </Observable>
     )
   }
 }

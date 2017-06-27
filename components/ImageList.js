@@ -1,8 +1,11 @@
 import Image from './Image'
+import {Observer, Observable} from './IntersectionObservable'
 
 const ImageList = ({images}) => (
-  <ul>
+  <Observer options={{threshold: [0.3]}} id='imagelist'>
+    <ul>
     {images.map((urls, index) => <li key={index}><Image key={index} {...urls} /></li>)}
+    </ul>
     <style jsx>{`
       ul {
         list-style: none;
@@ -18,7 +21,7 @@ const ImageList = ({images}) => (
         min-width: 200px;
       }
     `}</style>
-  </ul>
+  </Observer>
 )
 
 export default ImageList

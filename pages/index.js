@@ -1,7 +1,7 @@
 import React from 'react'
 import Head from 'next/head'
 import 'isomorphic-fetch'
-import IntersectionObservable from '../components/IntersectionObservable'
+import {Observer, Observable} from '../components/IntersectionObservable'
 import ImageList from '../components/ImageList'
 import LoadingIndicator from '../components/LoadingIndicator'
 
@@ -16,7 +16,7 @@ const fetchGifUrls = async (offset, limit) => {
 }
 
 
-const chunkSize = 5
+const chunkSize = 20
 
 class Boxes extends React.Component {
 
@@ -55,9 +55,11 @@ class Boxes extends React.Component {
           <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
         </Head>
         <ImageList images={this.state.gifs} />
-        <IntersectionObservable onChange={this.loadMore} options={{threshold: [0, 1]}} >
-          <LoadingIndicator />
-        </IntersectionObservable>
+        <Observer options={{threshold: [0, 1]}} id='loader'>
+          <Observable onIntersectionChange={this.loadMore} >
+            <LoadingIndicator />
+          </Observable>
+        </Observer>
         <style jsx global>{`
           body {
             margin: 0;
