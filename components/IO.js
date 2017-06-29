@@ -19,7 +19,7 @@ class Observable extends React.PureComponent {
 
   state = {}
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (!this.isObserved) {
       return
     }
@@ -36,19 +36,19 @@ class Observable extends React.PureComponent {
     this.node = node
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const io = findIntersectionObserver(this.node)
     if (io) {
-      this.setState({id: this._id}, () => {
+      this.setState({ id: this._id }, () => {
         io.observe(this.node, this.props.onIntersectionChange)
         this.isObserved = true
       })
     }
   }
 
-  render () {
+  render() {
     return (
-      <div ref={this.ref} data-intersectionobservableid={this.state.id} >
+      <div ref={this.ref} data-intersectionobservableid={this.state.id}>
         {this.props.children}
       </div>
     )
@@ -58,17 +58,20 @@ class Observable extends React.PureComponent {
 Observable._id = 0
 
 class Observer extends React.PureComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     if (typeof IntersectionObserver === 'undefined') {
       return
     }
-    this.io = new IntersectionObserver(this.onIntersectionChange, this.props.options)
+    this.io = new IntersectionObserver(
+      this.onIntersectionChange,
+      this.props.options
+    )
     this.callbacks = {}
     ios[this.props.id] = this
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.io) {
       this.io.disconnect()
     }
@@ -88,7 +91,9 @@ class Observer extends React.PureComponent {
 
   observe = (element, onIntersectionChange) => {
     if (this.io) {
-      this.callbacks[element.dataset.intersectionobservableid] = onIntersectionChange
+      this.callbacks[
+        element.dataset.intersectionobservableid
+      ] = onIntersectionChange
       this.io.observe(element)
     }
   }
@@ -100,16 +105,15 @@ class Observer extends React.PureComponent {
     }
   }
 
-  render () {
-    const {children} = this.props
+  render() {
+    const { children } = this.props
     const Element = this.props.element || 'div'
     return (
-      <Element data-intersectionobserverid={this.props.id} >
+      <Element data-intersectionobserverid={this.props.id}>
         {children}
       </Element>
     )
   }
 }
 
-export {Observer, Observable}
-
+export { Observer, Observable }

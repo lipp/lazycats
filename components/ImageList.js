@@ -1,10 +1,14 @@
 import Image from './Image'
-import {Observer, Observable} from './IntersectionObservable'
+import { Observer } from './IO'
 
-const ImageList = ({images}) => (
-  <Observer options={{threshold: [0.3]}} id='imagelist'>
+const ImageList = ({ images }) =>
+  <Observer options={{ threshold: [0.3] }} id="imagelist">
     <ul>
-    {images.map((urls, index) => <li key={index}><Image key={index} {...urls} /></li>)}
+      {images.map((urls, index) =>
+        <li key={index}>
+          <Image key={index} {...urls} />
+        </li>
+      )}
     </ul>
     <style jsx>{`
       ul {
@@ -22,6 +26,5 @@ const ImageList = ({images}) => (
       }
     `}</style>
   </Observer>
-)
 
 export default ImageList

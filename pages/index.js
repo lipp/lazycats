@@ -1,12 +1,12 @@
 import React from 'react'
 import Head from 'next/head'
 import 'isomorphic-fetch'
-import {Observer, Observable} from '../components/IntersectionObservable'
 import ImageList from '../components/ImageList'
 import LoadingIndicator from '../components/LoadingIndicator'
 
 const fetchGifUrls = async (offset, limit) => {
-  const endpoint = 'https://api.giphy.com/v1/gifs/search?api_key=d72eff4b2a41468ebecc3e910bf62fc3&q=cat&rating=G&lang=en'
+  const endpoint =
+    'https://api.giphy.com/v1/gifs/search?api_key=d72eff4b2a41468ebecc3e910bf62fc3&q=cat&rating=G&lang=en'
   const response = await fetch(`${endpoint}&limit=${limit}&offset=${offset}`)
   const json = await response.json()
   return json.data.map(entry => ({
@@ -15,17 +15,15 @@ const fetchGifUrls = async (offset, limit) => {
   }))
 }
 
-
 const chunkSize = 20
 
 class Boxes extends React.Component {
-
   state = {
     gifs: this.props.gifs,
     index: this.props.index
   }
 
-  static async getInitialProps ({req}) {
+  static async getInitialProps({ req }) {
     const urls = await fetchGifUrls(0, chunkSize)
     return {
       gifs: urls,
@@ -33,33 +31,35 @@ class Boxes extends React.Component {
     }
   }
 
-  loadMore = async ({intersectionRatio}) => {
+  loadMore = async ({ intersectionRatio }) => {
     if (this.loading || intersectionRatio === 0) {
       return
     }
     this.loading = true
-  
+
     const urls = await fetchGifUrls(this.state.index, chunkSize)
-    this.setState({
-      gifs: this.state.gifs.concat(urls),
-      index: this.state.index + chunkSize
-    }, () => this.loading = false)
+    this.setState(
+      {
+        gifs: this.state.gifs.concat(urls),
+        index: this.state.index + chunkSize
+      },
+      () => (this.loading = false)
+    )
   }
 
-  render () {
+  render() {
     return (
       <div>
         <Head>
           <title>Cats</title>
-          <meta name='viewport' content='initial-scale=1.0, width=device-width' />
-          <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
+          <meta
+            name="viewport"
+            content="initial-scale=1.0, width=device-width"
+          />
+          <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver" />
         </Head>
         <ImageList images={this.state.gifs} />
-        <Observer options={{threshold: [0, 1]}} id='loader'>
-          <Observable onIntersectionChange={this.loadMore} >
-            <LoadingIndicator />
-          </Observable>
-        </Observer>
+        <LoadingIndicator onVisible={this.loadMore} />
         <style jsx global>{`
           body {
             margin: 0;
@@ -71,6 +71,4 @@ class Boxes extends React.Component {
   }
 }
 
-
 export default Boxes
-
